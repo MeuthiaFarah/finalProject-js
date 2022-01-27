@@ -40,13 +40,29 @@ class PatientController {
 	 * @param {kodeStatus, json} res 
 	 */
 	async store(req, res) {
+		// menerima request berupa name, phone, address, status, in_date_at, dan out_date_at
+		const { name, phone, address, status, in_date_at, out_date_at } = req.body;
+
+		// manual authentication
+		// data must be filled in completely
+		if (!name || !phone || !address || !status || !in_date_at || !out_date_at) {
+			const data = {
+				message: `Semua data harus dikirim`,
+			};
+
+			// send error response
+			return res.status(422).json(data);
+		}
+
+		// else
+		// data added successfully
 		const patients = await patient.create(req.body);
 		const data = {
 			message: `Resource Added Successfully`,
 			data: patients,
 		};
 
-		res.status(201).json(data);
+		return 	res.status(201).json(data);
 	};
 
 	/**
