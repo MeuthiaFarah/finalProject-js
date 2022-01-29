@@ -5,8 +5,8 @@ const patient = require("../models/PatientModel");
 class PatientController {
 	/**
 	 * method get all resource
-	 * @param {} req 
-	 * @param {kodeStatus, json} res 
+	 * @param {} req
+	 * @param {kodeStatus, json} res
 	 * @returns mengembalikan kode status dan data seluruh pasien didatabase/respon error
 	 */
 	async index(req, res) {
@@ -20,7 +20,7 @@ class PatientController {
 
 			// return success response
 			return res.status(200).json(data);
-		};
+		}
 
 		// else
 		// send error response
@@ -30,24 +30,69 @@ class PatientController {
 
 		// return status code dan data json
 		return res.status(204).json(data);
-	};
+	}
 
 	/**
 	 * method create resource
 	 * menerima request body berupa data json
 	 * mengembalikan respon kode status dan data yang baru ditambahkan/ respon error
-	 * @param {json} req 
-	 * @param {kodeStatus, json} res 
+	 * @param {json} req
+	 * @param {kodeStatus, json} res
 	 */
 	async store(req, res) {
 		// menerima request berupa name, phone, address, status, in_date_at, dan out_date_at
 		const { name, phone, address, status, in_date_at, out_date_at } = req.body;
 
 		// manual authentication
+		// definisikan pengecekan alfabet
+		const alphabet = (char) => {
+			!/[a-zA-Z]/.test(char);
+		};
+
 		// data must be filled in completely
 		if (!name || !phone || !address || !status || !in_date_at || !out_date_at) {
 			const data = {
 				message: `Semua data harus dikirim`,
+			};
+
+			// send error response
+			return res.status(422).json(data);
+		}
+
+		// validasi nama harus alfabet
+		else if (alphabet(name)) {
+			const data = {
+				message: `Nama harus berupa alfabet`,
+			};
+
+			// send error response
+			return res.status(422).json(data);
+		}
+
+		// validasi nomor telepon harus angka
+		else if (isNaN(phone)) {
+			const data = {
+				message: `Nomor telepon harus berupa angka`,
+			};
+
+			// send error response
+			return res.status(422).json(data);
+		}
+
+		// validasi address harus alfabet
+		else if (alphabet(address)) {
+			const data = {
+				message: `Alamat harus berupa alfabet`,
+			};
+
+			// send error response
+			return res.status(422).json(data);
+		}
+
+		// validasi status harus sesuai dengan aturan
+		else if (!(status.toLowerCase() == 'positive' || status.toLowerCase() == 'recovered' || status.toLowerCase() == 'dead')) {
+			const data = {
+				message: `Status salah`,
 			};
 
 			// send error response
@@ -62,14 +107,14 @@ class PatientController {
 			data: patients,
 		};
 
-		return 	res.status(201).json(data);
-	};
+		return res.status(201).json(data);
+	}
 
 	/**
 	 * method update resource
 	 * menerima request parameter berupa id
-	 * @param {number} req 
-	 * @param {kodeStatus, json} res 
+	 * @param {number} req
+	 * @param {kodeStatus, json} res
 	 * @returns mengembalikan kode status beserta data yang telah di update/respon error
 	 */
 	async update(req, res) {
@@ -88,7 +133,7 @@ class PatientController {
 			};
 
 			return res.status(200).json(data);
-		};
+		}
 
 		// else
 		// send error response
@@ -97,13 +142,13 @@ class PatientController {
 		};
 
 		return res.status(404).json(data);
-	};
+	}
 
 	/**
 	 * method delete resource
 	 * menerima request parameter berupa id
-	 * @param {number} req 
-	 * @param {kodeStatus, json} res 
+	 * @param {number} req
+	 * @param {kodeStatus, json} res
 	 * @returns mengembalikan kode status dan pesan error/sukses
 	 */
 	async destroy(req, res) {
@@ -121,7 +166,7 @@ class PatientController {
 
 			// send success response
 			return res.status(200).json(data);
-		};
+		}
 
 		// else
 		// send error response
@@ -130,13 +175,13 @@ class PatientController {
 		};
 
 		return res.status(404).json(data);
-	};
+	}
 
 	/**
 	 * methos show one resource
 	 * menerima request parameter id
-	 * @param {number} req 
-	 * @param {kodeStatus, json} res 
+	 * @param {number} req
+	 * @param {kodeStatus, json} res
 	 * @returns mengembalikan kode status dan data berdasarkan id/respon error
 	 */
 	async show(req, res) {
@@ -148,27 +193,27 @@ class PatientController {
 		if (patients) {
 			const data = {
 				message: `Get Detail Resource`,
-				data: patients
+				data: patients,
 			};
 
 			// send success response
 			return res.status(200).json(data);
-		};
+		}
 
 		// else
 		// send error response
 		const data = {
-			message: `Resource Not Found`
+			message: `Resource Not Found`,
 		};
 
 		return res.status(404).json(data);
-	};
+	}
 
 	/**
 	 * method search resource by name
 	 * menerima request parameter berupa nama
-	 * @param {string} req 
-	 * @param {kodeStatus, json} res 
+	 * @param {string} req
+	 * @param {kodeStatus, json} res
 	 * @returns mengembalikan kode status dan data pasien/respon error
 	 */
 	async search(req, res) {
@@ -180,79 +225,79 @@ class PatientController {
 		if (patients) {
 			const data = {
 				message: `Get Searched Resource`,
-				data: patients
+				data: patients,
 			};
 
 			// send success response
 			return res.status(200).json(data);
-		};
+		}
 
 		// else
 		// send error response
 		const data = {
-			message: `Resource Not Found`
+			message: `Resource Not Found`,
 		};
 
 		return res.status(404).json(data);
-	};
+	}
 
 	/**
 	 * method get positive resource
 	 * menyeleksi data pasien dan mengembalikan data pasien dengan status positive
-	 * @param {*} req 
-	 * @param {kodeStatus, json} res 
+	 * @param {*} req
+	 * @param {kodeStatus, json} res
 	 */
 	async positive(req, res) {
-		const patients = await patient.findByStatus('positive');
+		const patients = await patient.findByStatus("positive");
 		const total = patients.length;
 		const data = {
 			message: `Get Positive Resource`,
 			total: total,
-			data: patients
+			data: patients,
 		};
 
 		// send success response
 		res.status(200).json(data);
-	};
+	}
 
 	/**
- * method get recovered resource
- * menyeleksi data pasien dan mengembalikan data pasien dengan status recovered
- * @param {*} req 
- * @param {kodeStatus, json} res 
- */
+	 * method get recovered resource
+	 * menyeleksi data pasien dan mengembalikan data pasien dengan status recovered
+	 * @param {*} req
+	 * @param {kodeStatus, json} res
+	 */
 	async recovered(req, res) {
-		const patients = await patient.findByStatus('recovered');
+		const patients = await patient.findByStatus("recovered");
 		const total = patients.length;
 		const data = {
 			message: `Get Recovered Resource`,
 			total: total,
-			data: patients
+			data: patients,
 		};
 
 		// send success response
 		res.status(200).json(data);
-	};
+	}
 
 	/**
- * method get dead resource
- * menyeleksi data pasien dan mengembalikan data pasien dengan status dead
- * @param {*} req 
- * @param {kodeStatus, json} res 
- */
+	 * method get dead resource
+	 * menyeleksi data pasien dan mengembalikan data pasien dengan status dead
+	 * @param {*} req
+	 * @param {kodeStatus, json} res
+	 */
 	async dead(req, res) {
-		const patients = await patient.findByStatus('dead');
+		const patients = await patient.findByStatus("dead");
 		const total = patients.length;
 		const data = {
 			message: `Get Dead Resource`,
 			total: total,
-			data: patients
+			data: patients,
 		};
 
 		// send success response
 		res.status(200).json(data);
-	};
-};
+	}
+}
 
 // create object class PatientController
 const object = new PatientController();
